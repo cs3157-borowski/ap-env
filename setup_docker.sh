@@ -8,7 +8,6 @@ command_exists() {
 }
 
 is_wsl() {
-  # WSL usually has "Microsoft" or "WSL" in /proc/version
   if [ -f /proc/version ]; then
     grep -qiE 'microsoft|wsl' /proc/version 2>/dev/null
   else
@@ -83,7 +82,6 @@ install_docker_linux_or_wsl() {
 OS="$(uname -s)"
 
 ensure_docker_running() {
-  # If docker info works, daemon is reachable
   if docker info >/dev/null 2>&1; then
     return 0
   fi
@@ -93,11 +91,9 @@ ensure_docker_running() {
   case "$OS" in
     Darwin)
       echo "Attempting to start Docker Desktop..."
-      # Try to start Docker.app in the background (no error if it already runs)
       open -g -a Docker || true
 
       echo "Waiting for Docker Desktop to start..."
-      # Wait up to ~60 seconds
       for i in {1..30}; do
         if docker info >/dev/null 2>&1; then
           echo "Docker is now running."
@@ -112,7 +108,7 @@ ensure_docker_running() {
       exit 1
       ;;
 
-  Linux)
+    Linux)
       if is_wsl; then
         echo "Docker Desktop does not appear to be running on Windows."
         echo "Please:"
@@ -168,12 +164,8 @@ fi
 # Detect native platform
 ARCH="$(uname -m)"
 case "$ARCH" in
-  arm64|aarch64)
-    PLATFORM="linux/arm64"
-    ;;
-  *)
-    PLATFORM="linux/amd64"
-    ;;
+  arm64|aarch64) PLATFORM="linux/arm64" ;;
+  *)             PLATFORM="linux/amd64" ;;
 esac
 
 # 2. Make sure the daemon is actually running
@@ -181,7 +173,6 @@ ensure_docker_running
 
 echo "Docker is installed and running. Pulling course image: $IMAGE"
 if docker pull "$IMAGE"; then
-  # Make run script executable and launch it
   chmod +x "$(dirname "$0")/run_docker.sh"
   exec "$(dirname "$0")/run_docker.sh"
 else
