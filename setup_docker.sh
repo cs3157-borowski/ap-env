@@ -167,13 +167,6 @@ if ! command_exists docker; then
   esac
 fi
 
-# Detect native platform
-ARCH="$(uname -m)"
-case "$ARCH" in
-  arm64|aarch64) PLATFORM="linux/arm64" ;;
-  *)             PLATFORM="linux/amd64" ;;
-esac
-
 # 2. Make sure the daemon is actually running
 ensure_docker_running
 
