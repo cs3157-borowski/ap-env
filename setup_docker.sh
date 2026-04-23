@@ -108,7 +108,7 @@ ensure_docker_running() {
       exit 1
       ;;
 
-    Linux)
+Linux)
       if is_wsl; then
         echo "Docker Desktop does not appear to be running on Windows."
         echo "Attempting to start Docker Desktop..."
@@ -129,12 +129,25 @@ ensure_docker_running() {
         exit 1
       fi
 
-    *)
-      echo "Unsupported OS: $OS"
-      echo "Docker is installed but not running. Please start Docker manually and rerun this script."
+      # Native Linux (not WSL)
+      echo "Attempting to start Docker service on Linux..."
+      if command_exists systemctl; then
+        sudo systemctl start docker || true
+      else
+        sudo service docker start || true
+      fi
+
+      if docker info >/dev/null 2>&1; then
+        echo "Docker service started."
+        return 0
+      fi
+
+      echo "Could not start Docker automatically."
+      echo "Please start Docker manually (for example: 'sudo systemctl start docker')"
+      echo "and then re-run this script."
       exit 1
       ;;
-  esac
+        esac
 }
 
 # 1. Check for docker, install if missing
