@@ -34,10 +34,33 @@ install_docker_macos() {
 }
 
 install_docker_linux_or_wsl() {
+install_docker_linux_or_wsl() {
   if is_wsl; then
     echo "Detected WSL (Windows Subsystem for Linux)."
-    echo "We will install Docker Engine inside WSL."
-  else
+    echo "Docker Desktop needs to be installed on Windows (not inside WSL)."
+
+    if command_exists winget.exe; then
+      echo "Found winget. Installing Docker Desktop on Windows..."
+      winget.exe install Docker.DockerDesktop --accept-source-agreements --accept-package-agreements
+      echo ""
+      echo "Docker Desktop installed. Please:"
+      echo "  1. Open Docker Desktop from the Windows Start menu"
+      echo "  2. Wait until it says 'Docker is running'"
+      echo "  3. In Settings > Resources > WSL Integration, enable your distro"
+      echo "  4. Re-open this WSL terminal and re-run ./setup_docker.sh"
+      exit 0
+    else
+      echo "winget not found. Please install Docker Desktop manually:"
+      echo "  https://www.docker.com/products/docker-desktop/"
+      echo ""
+      echo "Then:"
+      echo "  1. Open Docker Desktop and wait until it says 'Docker is running'"
+      echo "  2. In Settings > Resources > WSL Integration, enable your distro"
+      echo "  3. Re-open this WSL terminal and re-run ./setup_docker.sh"
+      exit 0
+    fi
+  fi
+else
     echo "Docker CLI not found. Attempting to install Docker Engine (Linux)..."
   fi
   echo "This requires sudo and will run Docker's convenience script from get.docker.com."
