@@ -146,7 +146,6 @@ if ! command_exists docker; then
   esac
 fi
 
-# TODO: Check how to run cmd on windows (or ignore on windows)
 # Detect native platform
 ARCH="$(uname -m)"
 case "$ARCH" in
@@ -162,15 +161,11 @@ esac
 ensure_docker_running
 
 echo "Docker is installed and running. Pulling course image: $IMAGE"
-docker pull "$IMAGE"
-
-echo "Starting course environment with fixed resources (4 CPUs, 4GB RAM, 16GB disk)..."
-docker run --rm \
-  --platform="$PLATFORM" \
-  --cpus="4" \
-  --memory="4g" \
-  --storage-opt size=8G \
-  -v "$PWD":/work \
-  -w /work \
-  "$IMAGE" \
-  /bin/bash
+if docker pull "$IMAGE"; then
+  # Make run script executable and launch it
+  chmod +x "$(dirname "$0")/run_docker.sh"
+  exec "$(dirname "$0")/run_docker.sh"
+else
+  echo "Failed to pull image. Please check your internet connection and try again."
+  exit 1
+fi
