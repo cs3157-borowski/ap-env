@@ -34,7 +34,6 @@ install_docker_macos() {
 }
 
 install_docker_linux_or_wsl() {
-install_docker_linux_or_wsl() {
   if is_wsl; then
     echo "Detected WSL (Windows Subsystem for Linux)."
     echo "Docker Desktop needs to be installed on Windows (not inside WSL)."
