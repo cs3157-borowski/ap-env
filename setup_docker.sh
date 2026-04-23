@@ -112,9 +112,17 @@ ensure_docker_running() {
       exit 1
       ;;
 
-    Linux)
-      echo "Attempting to start Docker service on Linux..."
+  Linux)
+      if is_wsl; then
+        echo "Docker Desktop does not appear to be running on Windows."
+        echo "Please:"
+        echo "  1. Open Docker Desktop from the Windows Start menu"
+        echo "  2. Wait until it says 'Docker is running'"
+        echo "  3. Re-run ./setup_docker.sh"
+        exit 1
+      fi
 
+      echo "Attempting to start Docker service on Linux..."
       if command_exists systemctl; then
         sudo systemctl start docker || true
       else
