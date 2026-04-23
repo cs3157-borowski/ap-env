@@ -111,30 +111,23 @@ ensure_docker_running() {
     Linux)
       if is_wsl; then
         echo "Docker Desktop does not appear to be running on Windows."
-        echo "Please:"
-        echo "  1. Open Docker Desktop from the Windows Start menu"
-        echo "  2. Wait until it says 'Docker is running'"
-        echo "  3. Re-run ./setup_docker.sh"
+        echo "Attempting to start Docker Desktop..."
+        powershell.exe -Command "Start-Process 'C:\Program Files\Docker\Docker\Docker Desktop.exe'" 2>/dev/null || true
+
+        echo "Waiting for Docker Desktop to start (this may take ~30 seconds)..."
+        for i in {1..30}; do
+          if docker info >/dev/null 2>&1; then
+            echo "Docker is now running."
+            return 0
+          fi
+          sleep 2
+        done
+
+        echo "Docker Desktop is still not responding."
+        echo "Please open Docker Desktop from the Windows Start menu manually,"
+        echo "wait until it says 'Docker is running', and then re-run ./setup_docker.sh"
         exit 1
       fi
-
-      echo "Attempting to start Docker service on Linux..."
-      if command_exists systemctl; then
-        sudo systemctl start docker || true
-      else
-        sudo service docker start || true
-      fi
-
-      if docker info >/dev/null 2>&1; then
-        echo "Docker service started."
-        return 0
-      fi
-
-      echo "Could not start Docker automatically."
-      echo "Please start Docker manually (for example: 'sudo systemctl start docker')"
-      echo "and then re-run this script."
-      exit 1
-      ;;
 
     *)
       echo "Unsupported OS: $OS"
