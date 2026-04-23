@@ -47,7 +47,6 @@ install_docker_linux_or_wsl() {
       echo "  2. Wait until it says 'Docker is running'"
       echo "  3. In Settings > Resources > WSL Integration, enable your distro"
       echo "  4. Re-open this WSL terminal and re-run ./setup_docker.sh"
-      exit 0
     else
       echo "winget not found. Please install Docker Desktop manually:"
       echo "  https://www.docker.com/products/docker-desktop/"
@@ -56,12 +55,12 @@ install_docker_linux_or_wsl() {
       echo "  1. Open Docker Desktop and wait until it says 'Docker is running'"
       echo "  2. In Settings > Resources > WSL Integration, enable your distro"
       echo "  3. Re-open this WSL terminal and re-run ./setup_docker.sh"
-      exit 0
     fi
+    exit 0
   fi
-else
-    echo "Docker CLI not found. Attempting to install Docker Engine (Linux)..."
-  fi
+
+  # Native Linux (not WSL)
+  echo "Docker CLI not found. Attempting to install Docker Engine (Linux)..."
   echo "This requires sudo and will run Docker's convenience script from get.docker.com."
   echo "Press Ctrl+C within 5 seconds to abort."
   sleep 5
@@ -72,22 +71,12 @@ else
   fi
 
   curl -fsSL https://get.docker.com | sudo sh
-
-  # Add current user to docker group (so they can run docker without sudo)
   sudo usermod -aG docker "$USER"
 
   echo
-  if is_wsl; then
-    echo "Docker installed inside WSL."
-    echo "Now:"
-    echo "  1. Close this terminal window."
-    echo "  2. Re-open your Ubuntu (WSL) terminal."
-    echo "  3. Re-run ./setup_docker.sh."
-  else
-    echo "Docker installed."
-    echo "You may need to log out and log back in so group changes take effect."
-    echo "Then re-run this script."
-  fi
+  echo "Docker installed."
+  echo "You may need to log out and log back in so group changes take effect."
+  echo "Then re-run this script."
   exit 0
 }
 
