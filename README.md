@@ -1,417 +1,265 @@
 # Advanced Programming – Standard Docker Environment
 
-This repository provides the **standard development environment** for Advanced Programming.
+This repository provides the **standard development environment** for Advanced Programming. Follow these instructions once to get set up; after that, starting your environment takes a single command.
 
 ## Table of Contents
 
-- [1. What This Environment Does](#1-what-this-environment-does)
-- [2. Prerequisites (General)](#2-prerequisites-general)
-- [3. macOS – Detailed Instructions](#3-macos--detailed-instructions)
-- [4. Windows (with WSL) – Detailed Instructions](#4-windows-with-wsl--detailed-instructions)
-- [5. Linux – Detailed Instructions](#5-linux--detailed-instructions-if-relevant-for-your-class)
-- [6. What You Do Inside the Container](#6-what-you-do-inside-the-container)
-- [7. Troubleshooting](#7-troubleshooting)
-- [8. Fairness and Grading Policy](#8-fairness-and-grading-policy)
+- [1. Set Up SSH Keys for GitHub](#1-set-up-ssh-keys-for-github)
+- [2. Clone This Repository](#2-clone-this-repository)
+- [3. Install Docker](#3-install-docker)
+  - [macOS](#macos)
+  - [Windows (WSL)](#windows-wsl)
+  - [Linux](#linux)
+- [4. Make the Scripts Executable](#4-make-the-scripts-executable)
+- [5. First-Time Setup: Run the Setup Script](#5-first-time-setup-run-the-setup-script)
+- [6. Every Time After That: Starting the Container](#6-every-time-after-that-starting-the-container)
+- [7. What You Do Inside the Container](#7-what-you-do-inside-the-container)
+- [8. Troubleshooting](#8-troubleshooting)
+- [9. Fairness and Grading Policy](#9-fairness-and-grading-policy)
 
 ---
 
-## 🔽 TL;DR – Quick Start
+## 1. Set Up SSH Keys for GitHub
 
-### macOS (Intel or Apple Silicon)
+To clone this repository, your computer needs to be authorized to communicate with GitHub. The standard way to do this is with an SSH key — a pair of files that act like a password, but you never have to type it.
 
-1. Install [Homebrew](https://brew.sh) if you don’t have it.
-2. In the assignment folder, run:
+**If you have never set up GitHub SSH keys before**, follow GitHub's official guide:
 
-   ```bash
-   chmod +x setup_docker.sh
-   ./setup_docker.sh
-   ```
+> [Generating a new SSH key and adding it to the SSH agent](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent)
 
-3. If Docker isn’t installed, the script will install Docker Desktop and then tell you to open it once. After Docker is running, run the script again.
-4. You’ll end up inside the course container at /ap. Compile and run code there.
+That page walks you through creating a key and registering it with your GitHub account. Once done, you will be able to `git clone` and `git pull` without entering a password every time.
+
+You won't need to push to this repository — but we may update the scripts over time, so you may occasionally need to run `git pull` to get the latest version.
 
 ---
 
-### Windows (WSL required)
+## 2. Clone This Repository
 
-1. Install WSL with Ubuntu (only once – see detailed instructions below).
-2. Open the Ubuntu app from the Start Menu.
-3. Inside Ubuntu, clone your assignment repo and run:
+Pick a **permanent folder** on your computer where you will keep your course work. This folder will also be your working directory inside the container, so choose somewhere stable (not your Downloads folder, not a temp directory).
 
-   ```bash
-   cd <your-assignment-repo>
-   chmod +x setup_docker.sh
-   ./setup_docker.sh
-   ```
-
-4. If Docker isn’t installed in WSL, the script will install it, then tell you to close and reopen Ubuntu and run the script again.
-5. Once inside the container at /ap, do all compilation and testing there.
-
----
-
-### Linux (optional section, if applicable)
-
-1. Make sure you have git installed.
-2. In the assignment folder, run:
-
-   ```bash
-   chmod +x setup_docker.sh
-   ./setup_docker.sh
-   ```
-
-3. The script will install Docker Engine if needed, then pull the course image and start the container.
-
----
-
-## 1. What This Environment Does
-
-- Uses a Docker image (e.g. `ghcr.io/CUAdvProg/ap-course-env:latest`) based on Ubuntu 24.04.
-- Installs tools we use in the course:
-  - `gcc`, `clang`, `make`, `gdb`, `valgrind`, `git`, `vim`, etc.
-- Enforces identical resource limits for everyone:
-
-```docker
-docker run --rm \
-  --platform=linux/amd64 \
-  --cpus="4" \
-  --memory="4g" \
-  --storage-opt size=8G \
-  -v "$PWD":/ap \
-  -w /ap \
-  ghcr.io/CUAdvProg/ap-course-env:latest \
-  /bin/bash
-```
-
-- Mounts your assignment folder into the container at `/ap`.
-
-You should think of the container as your course Linux server, running locally on your machine.
-
----
-
-## 2. Prerequisites (General)
-
-Regardless of OS, you’ll need:
-
-- An internet connection.
-- Basic command-line usage (we’ll guide you; you don’t need to be an expert).
-- The ability to install software on your machine (admin rights).
-
-You do not need to install Ubuntu as a dual-boot or VM. Windows users will use WSL; macOS users will use Docker Desktop; Linux users use Docker Engine.
-
----
-
-## 3. macOS – Detailed Instructions
-
-### 3.1. Confirm your macOS version and architecture
-
-- macOS 12+ (Monterey or newer) is recommended.
-- Works on both:
-  - Intel Macs
-  - Apple Silicon (M1/M2/M3) – Docker will emulate `linux/amd64` for consistency.
-
-To check your chip:
-
-- Click  → “About This Mac” → look for “Intel” or “Apple M1/M2/M3”.
-
-### 3.2. Install Homebrew (if you don’t have it)
-
-Open Terminal and run:
+For example:
 
 ```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+# macOS / Linux / WSL (Ubuntu terminal)
+mkdir -p ~/cs3157
+cd ~/cs3157
+git clone git@github.com:CUAdvProg/ap-env.git
+cd ap-env
 ```
 
-Follow the on-screen instructions. After installation, make sure `brew` works:
+> Not sure how to use `git clone`? See GitHub's guide: [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository)
 
-```bash
-brew --version
-```
-
-### 3.3. Clone the assignment repo
-
-In Terminal:
-
-```bash
-cd ~/some/folder/for/course
-git clone <your-assignment-repo-url>
-cd <your-assignment-repo>
-```
-
-You should see `setup_docker.sh` in the repo.
-
-### 3.4. Run the setup script
-
-In the assignment directory:
-
-```bash
-chmod +x setup_docker.sh
-./setup_docker.sh
-```
-
-The script will:
-
-1. Check if Docker is installed.
-2. If not installed:
-   - Use Homebrew to install Docker Desktop.
-   - Tell you to:
-     - Open the “Docker” app from `/Applications`.
-     - Wait until it shows “Docker is running”.
-     - Then re-run `./setup_docker.sh`.
-3. Once Docker is running, it will:
-   - Pull the course image.
-   - Start the container with 4 CPUs / 4 GB RAM / 8 GB disk.
-   - Drop you into a shell at `/ap`.
-
-### 3.5. Using the environment (macOS)
-
-Inside the container (you’ll see a bash prompt):
-
-```bash
-cd /ap
-ls             # should show your assignment files
-make           # compile
-./my_program   # run
-valgrind ./my_program   # memory checks (for appropriate assignments)
-```
-
-All compilation and tests must be run inside this environment. If it compiles and passes tests here, that’s what we will use for grading.
-
-To exit:
-
-```bash
-exit
-```
-
-The container will stop; your files remain in your normal filesystem.
+After cloning, your folder will contain (among others) `setup_docker.sh` and `run_docker.sh`. **Do not move or rename this folder** — your container will always look for it in the same place.
 
 ---
 
-## 4. Windows (with WSL) – Detailed Instructions
+## 3. Install Docker
 
-We require Windows users to use WSL (Windows Subsystem for Linux) with Ubuntu.
+Docker is the software that runs the course environment. Installation differs by OS.
 
-### 4.1. Install WSL and Ubuntu (only once)
+### macOS
+
+1. Download and install **Docker Desktop for Mac** from:
+   > [https://docs.docker.com/desktop/install/mac-install/](https://docs.docker.com/desktop/install/mac-install/)
+
+   Choose the installer that matches your chip (Apple Silicon or Intel — check via  → About This Mac).
+
+2. Open the downloaded `.dmg` file and drag Docker to your Applications folder.
+
+3. Open Docker from Applications. You will see a whale icon in your menu bar. **Wait until it stops animating and shows "Docker is running."**
+
+4. **You do not need to create a Docker account.** If it prompts you to sign in, you can skip or dismiss it.
+
+5. You do not need to use the Docker Desktop GUI after this — it just needs to be running in the background when you use the container.
+
+---
+
+### Windows (WSL)
+
+Docker on Windows requires WSL (Windows Subsystem for Linux), which gives you a full Linux terminal on your Windows machine.
+
+**Step A — Install WSL with Ubuntu (only once)**
 
 1. Open PowerShell as Administrator:
-   - Press Start, type “PowerShell”.
-   - Right-click “Windows PowerShell” → “Run as administrator”.
-2. In PowerShell, run:
-
+   - Press Start, type `PowerShell`, right-click → "Run as administrator".
+2. Run:
    ```powershell
    wsl --install
    ```
+3. Restart your computer when prompted.
+4. After reboot, an Ubuntu terminal window will open automatically. If it doesn't, open "Ubuntu" from the Start Menu.
+5. Create a Linux username and password when prompted (this is local to WSL, not your Windows login).
 
-If you already have WSL, you might see a message saying it’s installed; that’s fine.
+You now have a Linux terminal on Windows. **All course work is done inside this Ubuntu terminal**, not PowerShell or CMD.
 
-3. Restart your computer if prompted.
-4. After reboot, Windows will automatically open an Ubuntu window the first time. If not, open the “Ubuntu” app from the Start Menu manually.
-5. In the Ubuntu window, set up:
-   - A username (this is your Linux/WSL username, not necessarily your UNI).
-   - A password (this is local to WSL).
+**Step B — Install Docker Desktop for Windows**
 
-You now have a full Linux environment available on your Windows machine.
+1. Download and install from:
+   > [https://docs.docker.com/desktop/install/windows-install/](https://docs.docker.com/desktop/install/windows-install/)
 
-### 4.2. Clone the assignment repo inside WSL
+2. During installation, make sure "Use WSL 2 instead of Hyper-V" is checked (it usually is by default).
 
-Open the Ubuntu app again (from Start Menu). In the Ubuntu terminal:
+3. **You do not need to create a Docker account.** Skip or dismiss any sign-in prompt.
 
-```bash
-cd ~
-mkdir -p courses/advprog
-cd courses/advprog
+4. Open Docker Desktop. Wait until the whale icon in the system tray says "Docker is running."
 
-git clone <your-assignment-repo-url>
-cd <your-assignment-repo>
-```
+5. In Docker Desktop, go to **Settings → Resources → WSL Integration** and enable your Ubuntu distro.
 
-Important: Always work inside the WSL filesystem (paths like `/home/yourname/...`), not in `/mnt/c/...`, for best performance and fewer permission issues.
+6. You can minimize Docker Desktop — it just needs to be running in the background.
 
-You should see `setup_docker.sh` in the repo.
+**Step C — Clone the repo inside WSL**
 
-### 4.3. Run the setup script (WSL)
-
-In your assignment directory inside Ubuntu:
+Open your Ubuntu terminal and follow the same steps from [Section 2](#2-clone-this-repository):
 
 ```bash
-chmod +x setup_docker.sh
-./setup_docker.sh
+mkdir -p ~/cs3157
+cd ~/cs3157
+git clone git@github.com:CUAdvProg/ap-env.git
+cd ap-env
 ```
 
-The script will:
-
-1. Detect that it’s on Linux/WSL.
-2. Check if Docker is installed in WSL.
-3. If Docker is not installed:
-   - Use the official Docker install script to install Docker Engine.
-   - Add your WSL user to the `docker` group.
-   - Tell you to:
-     - Close the Ubuntu window.
-     - Re-open Ubuntu.
-     - Navigate back to your assignment directory.
-     - Re-run `./setup_docker.sh`.
-4. Once Docker is installed and usable:
-   - Pull the course image.
-   - Start the container with 4 CPUs / 4 GB RAM / 8 GB disk.
-   - Drop you into a shell at `/ap`.
-
-### 4.4. Using the environment (Windows + WSL)
-
-Once the container is running, your prompt is inside the container:
-
-```bash
-cd /ap
-ls             # should show your assignment files
-make           # compile
-./my_program   # run
-valgrind ./my_program
-```
-
-As with macOS: all compilation and testing should be done inside this container. We will grade using the same container and limits.
-
-To exit:
-
-```bash
-exit
-```
-
-The container stops; your code remains in your repo.
+> **Important:** Always work inside the WSL filesystem (paths like `/home/yourname/...`), not in `/mnt/c/...`. The `/mnt/c` path is your Windows C: drive — it's slower and causes permission issues.
 
 ---
 
-## 5. Linux – Detailed Instructions
+### Linux
 
-If you’re on a native Linux machine (not WSL):
+1. Install Docker Engine using the official instructions for your distro:
+   > [https://docs.docker.com/engine/install/](https://docs.docker.com/engine/install/)
 
-### 5.1. Install Git
+2. After installation, add your user to the `docker` group so you don't need `sudo` every time:
+   ```bash
+   sudo usermod -aG docker $USER
+   ```
+   Then log out and log back in for the change to take effect.
 
-On Ubuntu/Debian:
-
-```bash
-sudo apt-get update
-sudo apt-get install -y git
-```
-
-### 5.2. Clone the assignment repo
-
-```bash
-cd ~
-git clone <your-assignment-repo-url>
-cd <your-assignment-repo>
-```
-
-### 5.3. Run the setup script
-
-```bash
-chmod +x setup_docker.sh
-./setup_docker.sh
-```
-
-The script will:
-
-- Install Docker Engine via the official convenience script if needed.
-- Add your user to the `docker` group and ask you to log out and back in (if it just installed Docker).
-- Pull the course image.
-- Start the container in the same standard configuration.
-
-Usage inside the container is identical to the macOS/WSL instructions above.
+3. Clone the repo as in [Section 2](#2-clone-this-repository).
 
 ---
 
-## 6. What You Do Inside the Container
+## 4. Make the Scripts Executable
 
-Inside the container, you always work in `/ap`:
+Before running anything, mark both scripts as executable. Run this once from inside the cloned folder:
 
 ```bash
-cd /ap
-ls
+chmod +x setup_docker.sh run_docker.sh
 ```
+
+This is required — without it, the shell will refuse to run the scripts.
+
+---
+
+## 5. First-Time Setup: Run the Setup Script
+
+From inside the `ap-env` folder you cloned, run:
+
+```bash
+./setup_docker.sh
+```
+
+This script will:
+
+1. Check that Docker is installed and running.
+2. Pull the course Docker image from the internet (this may take a few minutes the first time).
+3. Launch the container and drop you into a shell at `/ap`.
+
+If Docker isn't running yet when you run this, the script will try to start it automatically and wait. If it can't, it will tell you what to do (usually: open Docker Desktop and try again).
+
+---
+
+## 6. Every Time After That: Starting the Container
+
+Once the setup is done, you don't need to run `setup_docker.sh` again. To start your environment in future sessions, run:
+
+```bash
+./run_docker.sh
+```
+
+**You must run this from the same `ap-env` folder you cloned** — that folder is what gets shared with the container at `/ap`. If you run it from a different directory, the mount won't point to your work.
+
+If the container already exists from a previous session, the script resumes it. If not, it creates a fresh one.
+
+---
+
+## 7. What You Do Inside the Container
+
+Once you're in the container, your prompt will look like:
+
+```
+(ap-env) student@<id>:/ap$
+```
+
+You are now inside a Linux environment with all course tools installed (`gcc`, `clang`, `make`, `gdb`, `valgrind`, `git`, and more).
+
+Your `/ap` directory inside the container is the same as the `ap-env` folder on your host machine — files you create or edit on either side are immediately visible on the other side.
 
 Typical workflow:
 
-1. Edit code (you can edit on the host using your editor/IDE; files are shared).
-2. Enter the container with `./setup_docker.sh`.
-3. In the container:
-
 ```bash
 cd /ap
-make
-./your_program
+ls              # see your files
+make            # compile
+./my_program    # run
+valgrind ./my_program   # check for memory errors
 ```
 
-4. Run any provided test scripts, e.g.:
+You can also edit files using your regular editor on your host (VS Code, etc.) while the container is running — changes appear instantly inside the container.
 
-```bash
-./run_public_tests.sh
-```
-
-5. Fix issues, rerun tests until everything passes.
-
-When you’re done:
+To exit the container:
 
 ```bash
 exit
 ```
 
-Then commit/push to GitHub from either:
-
-- the host (macOS/WSL/Linux), or
-- inside the container (since `git` is installed there too).
+The container stops, but your files remain on your host machine.
 
 ---
 
-## 7. Troubleshooting
+## 8. Troubleshooting
 
-### 7.1. “Docker command not found”
+### "Permission denied" when running a script
 
-- On macOS: you likely haven’t completed Docker Desktop installation:
-  - Install Homebrew.
-  - Run `./setup_docker.sh` again; it will install Docker Desktop.
-  - Then open Docker from Applications and wait until it says “Docker is running”.
-  - Re-run `./setup_docker.sh`.
-- On Windows (WSL):
-  - Run `./setup_docker.sh` inside Ubuntu.
-  - Follow its instructions if it installs Docker (close and reopen Ubuntu, then re-run).
-
-### 7.2. “Permission denied” when running setup_docker.sh
-
-Make sure it’s executable:
+Make sure you ran the `chmod` command from [Section 4](#4-make-the-scripts-executable):
 
 ```bash
-chmod +x setup_docker.sh
-./setup_docker.sh
+chmod +x setup_docker.sh run_docker.sh
 ```
 
-### 7.3. “Permission denied” when using Docker on Linux/WSL
+### "Docker command not found"
 
-Your user might not be in the `docker` group yet. Either:
+Docker is not installed or not in your PATH. Go back to [Section 3](#3-install-docker) and follow the steps for your OS.
 
-- Log out and log back in (recommended), or
-- Temporarily run with `sudo`:
+### "Cannot connect to Docker daemon"
+
+Docker is installed but not running. Open Docker Desktop (macOS or Windows) and wait until it says "Docker is running", then try again.
+
+### "Permission denied" using Docker on Linux/WSL
+
+Your user is not in the `docker` group yet. Run:
 
 ```bash
-sudo docker run ...
+sudo usermod -aG docker $USER
 ```
 
-The script already tries to add you to the `docker` group; logging out/in is needed for it to take effect.
+Then log out and log back in. On WSL, close and reopen the Ubuntu terminal.
 
-### 7.4. “Docker is running, but the script still fails”
+### Files don't appear inside the container
 
-- macOS: ensure Docker Desktop has finished starting (whale icon with no “starting…” indicator).
-- Windows (WSL): make sure you’re running the script inside Ubuntu, not PowerShell or CMD.
-- If you get specific error messages, copy them and ask in the course forum / office hours.
+Make sure you ran `run_docker.sh` from inside the `ap-env` folder you cloned, not from a different directory.
 
----
+### Something else
 
-## 8. Fairness and Grading Policy
-
-- All students are required to run their code inside this Docker environment.
-- We will grade using:
-  - The same Docker image.
-  - The same resource limits:
-    - 4 CPUs
-    - 4 GB RAM
-    - 8 GB container disk.
-
-If your program only works outside this container (e.g., using different compilers or flags) but fails inside, we grade based on its behavior inside the standard environment.
+Copy the full error message and bring it to office hours or post it on the course forum.
 
 ---
+
+## 9. Fairness and Grading Policy
+
+All students are required to compile and test their code inside this Docker environment. We grade using:
+
+- The same Docker image (`ghcr.io/cuadvprog/ap-env:latest`)
+- The same resource limits:
+  - 4 CPUs
+  - 4 GB RAM
+
+If your program works outside the container but fails inside it, we grade based on its behavior inside. There are no exceptions — this ensures a level playing field for everyone.
