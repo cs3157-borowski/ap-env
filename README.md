@@ -43,7 +43,7 @@ For example:
 # macOS / Linux / WSL (Ubuntu terminal)
 mkdir -p ~/cs3157
 cd ~/cs3157
-git clone git@github.com:CUAdvProg/ap-env.git
+git clone git@github.com:cs3157-borowski/ap-env.git
 cd ap-env
 ```
 
@@ -114,7 +114,7 @@ Open your Ubuntu terminal and follow the same steps from [Section 2](#2-clone-th
 ```bash
 mkdir -p ~/cs3157
 cd ~/cs3157
-git clone git@github.com:CUAdvProg/ap-env.git
+git clone git@github.com:cs3157-borowski/ap-env.git
 cd ap-env
 ```
 
@@ -257,7 +257,7 @@ Copy the full error message and bring it to office hours or post it on the cours
 
 All students are required to compile and test their code inside this Docker environment. We grade using:
 
-- The same Docker image (`ghcr.io/cuadvprog/ap-env:latest`)
+- The same Docker image (`ghcr.io/cs3157-borowski/ap-env:latest`)
 - The same resource limits:
   - 4 CPUs
   - 4 GB RAM
