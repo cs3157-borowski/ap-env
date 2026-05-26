@@ -2,7 +2,7 @@
 set -euo pipefail
 
 CONTAINER_NAME="cs3157"
-IMAGE="ghcr.io/cuadvprog/ap-env:latest"
+IMAGE="ghcr.io/cs3157-borowski/ap-env:latest"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 ARCH="$(uname -m)"
