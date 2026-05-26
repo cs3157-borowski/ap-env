@@ -21,6 +21,7 @@ RUN apt-get update && \
         sudo \
         python3 \
         python3-pip \
+        libc6-dev \
         # Documentation and man pages \
         man-db \
         manpages-dev \
