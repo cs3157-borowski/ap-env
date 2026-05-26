@@ -2,6 +2,7 @@
 FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
+LABEL org.opencontainers.image.source = "https://github.com/cs3157-borowski/ap-env"
 
 # Basic dev tools for C
 RUN apt-get update && \
