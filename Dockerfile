@@ -48,6 +48,8 @@ RUN apt-get update && \
         automake \
         libtool \
         pkg-config \
+        # Other tools
+        hyperfine \
     && rm -rf /var/lib/apt/lists/*
 
 # Install GitHub CLI
