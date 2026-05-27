@@ -11,6 +11,80 @@ case "$ARCH" in
   *)             PLATFORM="linux/amd64" ;;
 esac
 
+OS="$(uname -s)"
+
+ensure_docker_running() {
+  if docker info >/dev/null 2>&1; then
+    return 0
+  fi
+
+  echo "Docker CLI is installed, but the daemon does not seem to be running."
+
+  case "$OS" in
+    Darwin)
+      echo "Attempting to start Docker Desktop..."
+      open -g -a Docker || true
+
+      echo "Waiting for Docker Desktop to start..."
+      for i in {1..30}; do
+        if docker info >/dev/null 2>&1; then
+          echo "Docker is now running."
+          return 0
+        fi
+        sleep 2
+      done
+
+      echo "Docker Desktop is still not responding."
+      echo "Please open the 'Docker' app from Applications manually,"
+      echo "wait until it says 'Docker is running', and then re-run this script."
+      exit 1
+      ;;
+
+Linux)
+      if is_wsl; then
+        echo "Docker Desktop does not appear to be running on Windows."
+        echo "Attempting to start Docker Desktop..."
+        powershell.exe -Command "Start-Process 'C:\Program Files\Docker\Docker\Docker Desktop.exe'" 2>/dev/null || true
+
+        echo "Waiting for Docker Desktop to start (this may take ~30 seconds)..."
+        for i in {1..30}; do
+          if docker info >/dev/null 2>&1; then
+            echo "Docker is now running."
+            return 0
+          fi
+          sleep 2
+        done
+
+        echo "Docker Desktop is still not responding."
+        echo "Please open Docker Desktop from the Windows Start menu manually,"
+        echo "wait until it says 'Docker is running', and then re-run ./setup_docker.sh"
+        exit 1
+      fi
+
+      # Native Linux (not WSL)
+      echo "Attempting to start Docker service on Linux..."
+      if command_exists systemctl; then
+        sudo systemctl start docker || true
+      else
+        sudo service docker start || true
+      fi
+
+      if docker info >/dev/null 2>&1; then
+        echo "Docker service started."
+        return 0
+      fi
+
+      echo "Could not start Docker automatically."
+      echo "Please start Docker manually (for example: 'sudo systemctl start docker')"
+      echo "and then re-run this script."
+      exit 1
+      ;;
+        esac
+}
+
+# Make sure the daemon is actually running
+ensure_docker_running
+
 print_banner() {
   printf '\033[1;33m\n'
   printf '  ╔══════════════════════════════════════════════════════════════════╗\n'
