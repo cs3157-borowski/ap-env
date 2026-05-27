@@ -65,7 +65,25 @@ RUN useradd -ms /bin/bash student
 USER student
 WORKDIR /ap
 
-# Nice prompt, optional
+# Nice prompt
 RUN echo 'export PS1="(ap-env) \u@\h:\w$ "' >> ~/.bashrc
+
+# Reminder banner shown on every shell start
+RUN printf '%s\n' \
+    '' \
+    'printf "\\033[1;33m\\n"' \
+    'printf "  ╔══════════════════════════════════════════════════════════════════╗\\n"' \
+    'printf "  ║                                                                  ║\\n"' \
+    'printf "  ║                       !! IMPORTANT !!                            ║\\n"' \
+    'printf "  ║                                                                  ║\\n"' \
+    'printf "  ║   Always save your work inside /ap                               ║\\n"' \
+    'printf "  ║                                                                  ║\\n"' \
+    'printf "  ║   /ap is shared with your computer - files there are safe.       ║\\n"' \
+    'printf "  ║   Files saved OUTSIDE /ap will be LOST if the container          ║\\n"' \
+    'printf "  ║   is ever recreated (e.g., after a course image update).         ║\\n"' \
+    'printf "  ║                                                                  ║\\n"' \
+    'printf "  ╚══════════════════════════════════════════════════════════════════╝\\n"' \
+    'printf "\\033[0m\\n"' \
+    >> ~/.bashrc
 
 CMD ["/bin/bash"]
