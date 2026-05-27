@@ -65,8 +65,8 @@ RUN useradd -ms /bin/bash student
 USER student
 WORKDIR /ap
 
-# Nice prompt
-RUN echo 'export PS1="(ap-env) \u@\h:\w$ "' >> ~/.bashrc
+# Nice colorful prompt
+RUN echo 'export PS1="\[\033[1;32m\](ap-env)\[\033[0m\] \[\033[1;36m\]\u@\h\[\033[0m\]:\[\033[1;34m\]\w\[\033[0m\]$ "' >> ~/.bashrc
 
 # Reminder banner shown on every shell start
 RUN printf '%s\n' \
