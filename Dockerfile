@@ -60,6 +60,17 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | s
     && apt-get install -y gh \
     && rm -rf /var/lib/apt/lists/*
 
+# Install Lazygit (Architecture-aware for all machines)
+RUN ARCH=$(dpkg --print-architecture) && \
+    if [ "$ARCH" = "amd64" ]; then LG_ARCH="x86_64"; \
+    elif [ "$ARCH" = "arm64" ]; then LG_ARCH="arm64"; \
+    else echo "Unsupported architecture: $ARCH" && exit 1; fi && \
+    LAZYGIT_VERSION="0.61.1" && \
+    curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_Linux_${LG_ARCH}.tar.gz" && \
+    tar xf lazygit.tar.gz lazygit && \
+    install lazygit /usr/local/bin && \
+    rm lazygit.tar.gz lazygit
+
 # Create non-root user "student"
 RUN useradd -ms /bin/bash student
 USER student
