@@ -71,6 +71,9 @@ RUN ARCH=$(dpkg --print-architecture) && \
     install lazygit /usr/local/bin && \
     rm lazygit.tar.gz lazygit
 
+# Set root password (escape hatch for students who need elevated access via `su -`)
+RUN echo "root:KravMaga" | chpasswd
+
 # Create non-root user "student"
 RUN useradd -ms /bin/bash student
 USER student

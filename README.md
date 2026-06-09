@@ -247,6 +247,20 @@ Then log out and log back in. On WSL, close and reopen the Ubuntu terminal.
 
 Make sure you ran `run_docker.sh` from inside the `ap-env` folder you cloned, not from a different directory.
 
+### I need to install something or run a command that requires root access
+
+The `student` user does not have `sudo` privileges — this mirrors the grading environment. If you need elevated access to work around a problem, you can switch to the root user:
+
+```bash
+su -
+```
+
+When prompted for a password, enter: `KravMaga`
+
+You will get a root shell. Type `exit` when done to return to your `student` session.
+
+> **Note:** Any changes you make as root outside of `/ap` will be lost when the container is recreated. Save your work in `/ap` as always.
+
 ### Something else
 
 Copy the full error message and bring it to office hours or post it on the course forum.
