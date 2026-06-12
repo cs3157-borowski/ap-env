@@ -4,18 +4,27 @@ This repository provides the **standard development environment** for Advanced P
 
 ## Table of Contents
 
-- [1. Set Up SSH Keys for GitHub](#1-set-up-ssh-keys-for-github)
-- [2. Clone This Repository](#2-clone-this-repository)
-- [3. Install Docker](#3-install-docker)
-  - [macOS](#macos)
-  - [Windows (WSL)](#windows-wsl)
-  - [Linux](#linux)
-- [4. Make the Scripts Executable](#4-make-the-scripts-executable)
-- [5. First-Time Setup: Run the Setup Script](#5-first-time-setup-run-the-setup-script)
-- [6. Every Time After That: Starting the Container](#6-every-time-after-that-starting-the-container)
-- [7. What You Do Inside the Container](#7-what-you-do-inside-the-container)
-- [8. Troubleshooting](#8-troubleshooting)
-- [9. Fairness and Grading Policy](#9-fairness-and-grading-policy)
+- [Advanced Programming – Standard Docker Environment](#advanced-programming--standard-docker-environment)
+  - [Table of Contents](#table-of-contents)
+  - [1. Set Up SSH Keys for GitHub](#1-set-up-ssh-keys-for-github)
+  - [2. Clone This Repository](#2-clone-this-repository)
+  - [3. Install Docker](#3-install-docker)
+    - [macOS](#macos)
+    - [Windows (WSL)](#windows-wsl)
+    - [Linux](#linux)
+  - [4. Make the Scripts Executable](#4-make-the-scripts-executable)
+  - [5. First-Time Setup: Run the Setup Script](#5-first-time-setup-run-the-setup-script)
+  - [6. Every Time After That: Starting the Container](#6-every-time-after-that-starting-the-container)
+  - [7. What You Do Inside the Container](#7-what-you-do-inside-the-container)
+  - [8. Troubleshooting](#8-troubleshooting)
+    - ["Permission denied" when running a script](#permission-denied-when-running-a-script)
+    - ["Docker command not found"](#docker-command-not-found)
+    - ["Cannot connect to Docker daemon"](#cannot-connect-to-docker-daemon)
+    - ["Permission denied" using Docker on Linux/WSL](#permission-denied-using-docker-on-linuxwsl)
+    - [Files don't appear inside the container](#files-dont-appear-inside-the-container)
+    - [I need to install something or run a command that requires root access](#i-need-to-install-something-or-run-a-command-that-requires-root-access)
+    - [Something else](#something-else)
+  - [9. Fairness and Grading Policy](#9-fairness-and-grading-policy)
 
 ---
 
@@ -60,9 +69,10 @@ Docker is the software that runs the course environment. Installation differs by
 ### macOS
 
 1. Download and install **Docker Desktop for Mac** from:
+
    > [https://docs.docker.com/desktop/install/mac-install/](https://docs.docker.com/desktop/install/mac-install/)
 
-   Choose the installer that matches your chip (Apple Silicon or Intel — check via  → About This Mac).
+   Choose the installer that matches your chip (Apple Silicon or Intel — check via → About This Mac).
 
 2. Open the downloaded `.dmg` file and drag Docker to your Applications folder.
 
@@ -95,6 +105,7 @@ You now have a Linux terminal on Windows. **All course work is done inside this 
 **Step B — Install Docker Desktop for Windows**
 
 1. Download and install from:
+
    > [https://docs.docker.com/desktop/install/windows-install/](https://docs.docker.com/desktop/install/windows-install/)
 
 2. During installation, make sure "Use WSL 2 instead of Hyper-V" is checked (it usually is by default).
@@ -125,12 +136,15 @@ cd ap-env
 ### Linux
 
 1. Install Docker Engine using the official instructions for your distro:
+
    > [https://docs.docker.com/engine/install/](https://docs.docker.com/engine/install/)
 
 2. After installation, add your user to the `docker` group so you don't need `sudo` every time:
+
    ```bash
    sudo usermod -aG docker $USER
    ```
+
    Then log out and log back in for the change to take effect.
 
 3. Clone the repo as in [Section 2](#2-clone-this-repository).
