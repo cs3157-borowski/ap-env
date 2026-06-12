@@ -101,10 +101,12 @@ print_banner() {
   printf '\033[0m\n'
 }
 
-# Check for image updates (fast no-op if already up to date)
-echo "Checking for course image updates..."
+# Check for image updates
 OLD_DIGEST=$(docker image inspect "$IMAGE" --format '{{index .RepoDigests 0}}' 2>/dev/null || echo "none")
-docker pull --quiet "$IMAGE"
+
+# Call our custom module for the pull progress bar
+bash "$SCRIPT_DIR/modules/docker_pull_progress.sh" "$IMAGE"
+
 NEW_DIGEST=$(docker image inspect "$IMAGE" --format '{{index .RepoDigests 0}}' 2>/dev/null || echo "none")
 
 IMAGE_UPDATED=false
