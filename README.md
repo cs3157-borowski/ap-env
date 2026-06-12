@@ -217,7 +217,7 @@ make            # compile
 valgrind ./my_program   # check for memory errors
 ```
 
-You can also edit files using your regular editor on your host (VS Code, etc.) while the container is running — changes appear instantly inside the container.
+You can also edit files using your regular editor on your host ([VS Code](https://github.com/cs3157-borowski/guides/blob/main/vscode_docker.md), etc.) while the container is running — changes appear instantly inside the container.
 
 To exit the container:
 
