@@ -51,6 +51,7 @@ RUN apt-get update && \
         pkg-config \
         # Other tools
         hyperfine \
+        jq \
     && rm -rf /var/lib/apt/lists/*
 
 # Install GitHub CLI
