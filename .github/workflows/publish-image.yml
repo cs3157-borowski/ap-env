@@ -5,6 +5,11 @@ on:
     paths:
       - Dockerfile
       - .github/workflows/publish-image.yml
+      - 'tests/**'
+  schedule:
+    - cron: '0 0 28 12 *' # End of Fall
+    - cron: '0 0 20 5 *'  # End of Spring
+    - cron: '0 0 20 8 *'  # End of Summer
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -28,10 +33,32 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Get current date
+        id: date
+        run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+      - name: Build and load for testing
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          load: true
+          pull: true
+          tags: ghcr.io/cs3157-borowski/ap-env:test
+
+      - name: Run Sanity Tests
+        run: |
+          # multisource-project test
+          docker run --rm -v ${{ github.workspace }}/tests:/ap/tests ghcr.io/cs3157-borowski/ap-env:test bash -c "cd /ap/tests/multisource-project && make && ./test"
+          # memory test
+          docker run --rm -v ${{ github.workspace }}/tests:/ap/tests ghcr.io/cs3157-borowski/ap-env:test bash -c "cd /ap/tests/memory && make && valgrind --error-exitcode=1 ./memory"
+
       - name: Build and push image
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
+          pull: true
           platforms: linux/amd64,linux/arm64        
-          tags: ghcr.io/cs3157-borowski/ap-env:latest
+          tags: |
+            ghcr.io/cs3157-borowski/ap-env:latest
+            ghcr.io/cs3157-borowski/ap-env:${{ steps.date.outputs.date }}

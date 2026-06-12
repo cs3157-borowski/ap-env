@@ -6,6 +6,7 @@ LABEL org.opencontainers.image.source = "https://github.com/cs3157-borowski/ap-e
 
 # Basic dev tools for C
 RUN apt-get update && \
+    apt-get upgrade -y && \
     apt-get install -y \
         build-essential \
         gdb \
