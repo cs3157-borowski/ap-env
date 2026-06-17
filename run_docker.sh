@@ -114,7 +114,18 @@ if [ "$OLD_DIGEST" != "$NEW_DIGEST" ]; then
   IMAGE_UPDATED=true
 fi
 
+CONTAINER_EXISTS=false
+CONTAINER_RUNNING=false
+
 if docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
+  CONTAINER_EXISTS=true
+fi
+
+if docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
+  CONTAINER_RUNNING=true
+fi
+
+if [ "$CONTAINER_EXISTS" = true ]; then
   if [ "$IMAGE_UPDATED" = true ]; then
     echo ""
     echo "A new version of the course image is available."
@@ -125,17 +136,29 @@ if docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
     read -rp "Recreate container with the new image? [y/N] " reply
     echo
     if [[ "$reply" =~ ^[Yy]$ ]]; then
+      if [ "$CONTAINER_RUNNING" = true ]; then
+        docker stop "$CONTAINER_NAME"
+      fi
       docker rm "$CONTAINER_NAME"
     else
       echo "Keeping existing container."
       print_banner
-      docker start -ai "$CONTAINER_NAME"
+      if [ "$CONTAINER_RUNNING" = true ]; then
+        docker exec -it "$CONTAINER_NAME" bash
+      else
+        docker start -ai "$CONTAINER_NAME"
+      fi
       exit 0
     fi
   else
-    echo "Container '$CONTAINER_NAME' found. Resuming..."
     print_banner
-    docker start -ai "$CONTAINER_NAME"
+    if [ "$CONTAINER_RUNNING" = true ]; then
+      echo "Container '$CONTAINER_NAME' is already running. Opening a new shell..."
+      docker exec -it "$CONTAINER_NAME" bash
+    else
+      echo "Container '$CONTAINER_NAME' found. Resuming..."
+      docker start -ai "$CONTAINER_NAME"
+    fi
     exit 0
   fi
 fi
