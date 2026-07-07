@@ -52,6 +52,7 @@ RUN apt-get update && \
         # Other tools
         hyperfine \
         jq \
+        default-jdk \
     && rm -rf /var/lib/apt/lists/*
 
 # Install GitHub CLI
